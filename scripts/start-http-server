@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
+
+SITE_DIR=$HERE/../docs
+
+cd "$SITE_DIR"
+"$HERE/start-http-server.py" -m http.server 8000

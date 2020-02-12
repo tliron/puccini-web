@@ -1,0 +1,165 @@
+heat_template_version: 2018-08-31
+
+# See: https://docs.openstack.org/heat/stein/template_guide/hot_guide.html
+
+description: >-
+  Hello World stack
+
+parameters:
+
+  image:
+    type: string
+    label: Server image name
+    default: centos7
+
+  username:
+    type: string
+    label: Server user name
+    default: admin
+    constraints:
+    - length: { min: 4, max: 8 }
+      description: Length must be between 4 and 8 characters
+    - allowed_pattern: "[a-zA-Z0-9]+"
+      description: Must consist of characters and numbers only
+
+  public-network:
+    type: string
+    label: Public network name
+    default: public
+
+  timezone:
+    type: string
+    label: Timezone
+    default: UTC
+
+resources:
+
+  # Networking
+
+  private-net:
+    type: OS::Neutron::Net
+    properties:
+      name: private
+
+  private-subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      name: private
+      network: { get_resource: private-net }
+      enable_dhcp: true # the default is true
+      ip_version: 4
+      cidr: 192.0.1.0/24
+      gateway_ip: 192.0.1.1 # can be any address not in allocation pools
+      allocation_pools:
+      - start: 192.0.1.2
+        end: 192.0.1.254
+
+  public-router:
+    type: OS::Neutron::Router
+    properties:
+      name: public
+      external_gateway_info:
+        network: { get_param: public-network }
+
+  public-router-interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: public-router }
+      subnet: { get_resource: private-subnet } # will create a port at "gateway_ip" address
+
+  security-group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: control-plane
+      rules:
+      - protocol: icmp
+      - protocol: tcp
+        port_range_min: 22
+        port_range_max: 22
+
+  port:
+    # Exposed as output "private-ip"
+    type: OS::Neutron::Port
+    properties:
+      name: port
+      network: { get_resource: private-net }
+      fixed_ips: # required if we want to bind a floating IP to this port
+      - subnet: { get_resource: private-subnet }
+      security_groups:
+      - { get_resource: security-group }
+
+  public-ip:
+    # Exposed as output "public-ip"
+    type: OS::Neutron::FloatingIP
+    properties:
+      port_id: { get_resource: port } 
+      floating_network: { get_param: public-network }
+
+  # Server
+
+  keypair:
+    # Exposed as output "private-key"
+    type: OS::Nova::KeyPair
+    properties:
+      name: hello-world
+      save_private_key: true
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      name: hello-world # will be used as hostname
+      flavor: m1.tiny
+      image: { get_param: image }
+      user_data: { get_resource: server-config }
+      user_data_format: RAW
+      key_name: { get_resource: keypair }
+      networks:
+      - port: { get_resource: port }
+
+  server-config:
+    type: OS::Heat::CloudConfig
+    properties:
+      # See: https://cloudinit.readthedocs.io/
+      cloud_config:
+        user: { get_param: username }
+        timezone: { get_param: timezone }
+        # Initialize our "volume-attachment"
+        fs_setup:
+        - device: /dev/vdb
+          filesystem: xfs
+        mounts:
+        - [ /dev/vdb, /media/volume ]
+        runcmd:
+        # We don't need cloud-init anymore:
+        - systemctl disable cloud-config.service
+        - systemctl disable cloud-final.service
+        - systemctl disable cloud-init-local.service
+        - systemctl disable cloud-init.service
+
+  # Volume
+
+  volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: 5 # GB
+
+  volume-attachment:
+    # Default mountpoint is /dev/vdb
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: volume }
+      instance_uuid: { get_resource: server }
+
+outputs:
+
+  private-key:
+    description: Private key
+    value: { get_attr: [ keypair, private_key ] }
+
+  private-ip:
+    description: Private IP address
+    value: { get_attr: [ port, fixed_ips, 0, ip_address ] }
+
+  public-ip:
+    description: Public IP address
+    value: { get_attr: [ public-ip, floating_ip_address ] }

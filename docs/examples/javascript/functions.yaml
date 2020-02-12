@@ -1,0 +1,47 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+# To evaluate the functions run:
+#   puccini-tosca compile --coerce examples/javascript/functions.yaml
+
+# Also see: define.yaml, examples/tosca/functions.yaml, examples/tosca/metadata.yaml
+
+metadata:
+
+  template_name: JavaScript Functions Example
+  template_author: Puccini
+
+  # Use metadata prefixed with "puccini.scriptlet:tosca.function."
+  # The postfix is the function name
+  # Your scriptlet must provide a global function named "evaluate"
+  # It can have any number of arguments
+  puccini.scriptlet:tosca.function.in_bed: |-
+    function evaluate() {
+      var a = [];
+      for (var i in arguments) {
+        a.push(arguments[i] + ' in bed');
+      }
+      return a.join('; ');
+    }
+
+  # You can also use "puccini.scriptlet.import:function." if you prefer to import the scriptlet from a separate file
+  puccini.scriptlet.import:tosca.function.double: imports/double.js
+
+node_types:
+
+  Rack:
+    properties:
+      status:
+        type: string
+      slots:
+        type: integer
+
+topology_template:
+
+  node_templates:
+
+    rack:
+      type: Rack
+      properties:
+        # Using our custom functions
+        status: { in_bed: [ Sleeping, Eating, Coding ] }
+        slots: { double: 4 }

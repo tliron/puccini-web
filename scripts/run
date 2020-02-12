@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
+
+if ! command -v node > /dev/null 2>&1; then
+	echo 'Node.js must be installed'
+	exit 1
+fi
+
+SITE_DIR=$HERE/../docs
+WASM_DIR=$SITE_DIR/wasm
+WASM_EXEC=$(go env GOROOT)/misc/wasm/go_js_wasm_exec
+
+function run () {
+	local TOOL=$1
+	"$WASM_EXEC" "$WASM_DIR/$TOOL.wasm" "${@:2}"
+}
+
+run puccini-tosca "$@" 

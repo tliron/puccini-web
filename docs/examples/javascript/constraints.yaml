@@ -1,0 +1,43 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+# To apply the constraints run:
+#   puccini-tosca compile --coerce examples/javascript/constraints.yaml
+
+# Also see: functions.yaml
+
+metadata:
+
+  template_name: JavaScript Constraints Example
+  template_author: Puccini
+
+  # Use metadata prefixed with "puccini.scriptlet:tosca.constraint."
+  # Your code must provide a global function named "validate"
+  # The first argument is always the value to validate
+  # Return "true" if valid
+  # If invalid, can return "false" or a string explaining the reason it is invalid
+  # (Note that this is different from "throw", which should be used for errors)
+  puccini.scriptlet:tosca.constraint.multiple_of: |-
+    function validate(value, multiple) {
+      if (arguments.length !== 2)
+        throw 'must have 1 argument';
+      return (value / multiple) % 1 == 0;
+    }
+
+node_types:
+
+  Rack:
+    properties:
+      slots:
+        type: integer
+        constraints:
+        # Our custom constraint
+        - multiple_of: 4
+
+topology_template:
+
+  node_templates:
+
+    rack:
+      type: Rack
+      properties:
+        slots: 8

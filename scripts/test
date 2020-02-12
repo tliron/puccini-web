@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
+
+SITE_DIR=$HERE/../docs
+EXAMPLES_DIR=$SITE_DIR/examples
+
+"$HERE/run" compile "$EXAMPLES_DIR/tosca/data-types.yaml" "$@" 

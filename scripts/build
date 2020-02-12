@@ -1,0 +1,59 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
+
+SITE_DIR=$HERE/../docs
+WASM_DIR=$SITE_DIR/wasm
+EXAMPLES_DIR=$SITE_DIR/examples
+WASM_EXEC=$(go env GOROOT)/misc/wasm/go_js_wasm_exec
+
+if [ -z "$REPO" ]; then
+	REPO=$HERE/repo
+
+	if [ "$1" == -c ]; then
+		rm --force --recursive "$REPO"
+	fi
+
+	if [ ! -d "$REPO" ]; then
+		git clone https://github.com/tliron/puccini "$REPO"
+	else
+		git -C "$REPO" pull
+	fi
+fi
+
+"$REPO/scripts/build-wasm"
+cp "$REPO/dist/puccini-tosca.wasm" "$WASM_DIR/" 
+# BUG: broken in Go 1.15, https://github.com/golang/go/issues/40730
+#rsync "$(go env GOROOT)/misc/wasm/wasm_exec.js" "$SITE_DIR/js/"
+
+cd "$REPO/examples"
+rsync --relative \
+	"tosca/artifacts.yaml" \
+	"tosca/attributes.yaml" \
+	"tosca/copy.yaml" \
+	"tosca/data-types.yaml" \
+	"tosca/descriptions.yaml" \
+	"tosca/dsl-definitions.yaml" \
+	"tosca/functions.yaml" \
+	"tosca/inputs-and-outputs.yaml" \
+	"tosca/interfaces.yaml" \
+	"tosca/metadata.yaml" \
+	"tosca/policies-and-groups.yaml" \
+	"tosca/requirements-and-capabilities.yaml" \
+	"tosca/simple-for-nfv.yaml" \
+	"tosca/source-and-target.yaml" \
+	"tosca/unicode.yaml" \
+	"tosca/workflows.yaml" \
+	"javascript/constraints.yaml" \
+	"javascript/functions.yaml" \
+	"cloudify/advanced-blueprint-example.yaml" \
+	"cloudify/example.yaml" \
+	"hot/hello-world.yaml" \
+	"bpmn/open-loop.yaml" \
+	"openstack/hello-world.yaml" \
+	"$EXAMPLES_DIR/"
+
+"$HERE/update-examples"
+
+echo Done!

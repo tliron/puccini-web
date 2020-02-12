@@ -1,0 +1,42 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+node_templates:
+
+  host:
+    type: cloudify.nodes.Compute
+
+  db:
+    type: cloudify.nodes.DBMS
+    relationships:
+    - type: cloudify.relationships.contained_in
+      target: host
+
+groups:
+
+  host_and_db:
+    members: [ host, db ]
+
+policies:
+
+  scaling:
+    type: cloudify.policies.types.threshold
+    properties:
+      default_instances: 2
+    targets: [ host_and_db ]
+
+plugins:
+
+  plugin_with_args:
+    executor: central_deployment_agent
+    source: http://www.example.com/path/to/plugin.tar.gz
+    install_arguments: -r requirements.txt
+
+upload_resources:
+
+  plugin_resources:
+  - http://www.my-plugin.com/path/to/plugin.wgn
+  dsl_resources:
+  - source_path: http://www.my-plugin.com/path/to/plugin.yaml
+    destination_path: /opt/cfy/plugins/my-plugin-name/plugin.yaml
+  parameters:
+    fetch_timeout: 20

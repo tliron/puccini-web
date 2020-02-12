@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
+
+SITE_DIR=$HERE/../docs
+EXAMPLES_DIR=$SITE_DIR/examples
+EXAMPLES_JS=$SITE_DIR/js/examples.js
+
+printf 'const examples = [' > "$EXAMPLES_JS"
+
+FIRST=true
+for EXAMPLE in $(find "$EXAMPLES_DIR" -type f -name *.yaml | sort); do
+	EXAMPLE=$(realpath --relative-to="$SITE_DIR/" "$EXAMPLE")
+	if [ "$FIRST" == true ]; then
+		FIRST=false
+	else
+		printf "," >> "$EXAMPLES_JS"
+	fi
+	printf "\n	'$EXAMPLE'" >> "$EXAMPLES_JS"
+done
+
+printf '\n];\n' >> "$EXAMPLES_JS"

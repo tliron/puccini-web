@@ -1,0 +1,49 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+# Straightforward TOSCA version of the Heat hello world:
+# https://docs.openstack.org/heat/pike/template_guide/hello_world.html
+
+metadata:
+
+  template_name: OpenStack Profile Example
+  template_author: Puccini
+
+imports:
+
+- namespace_prefix: openstack
+  file: internal:/tosca/openstack/1.0/profile.yaml
+
+topology_template:
+
+  inputs:
+
+    key_name:
+      type: string
+      default: my_key
+      description: Name of key-pair to be used for compute instance
+    image_id:
+      type: string
+      default: CentOS-7-x86_643
+      description: Image to be used for compute instance
+    flavor:
+      type: string
+      default: m1.small
+      description: Type of instance (flavor) to be used      
+      constraints:
+      - valid_values: [ m1.small, m1.medium, m1.large, m1.xlarge ]
+
+  node_templates:
+
+    my_instance:
+      type: openstack:nova.Server
+      properties:
+        key_name: { get_input: key_name }
+        image: { get_input: image_id }
+        flavor: { get_input: flavor }
+
+  outputs:
+
+    instance_ip:
+      description: The IP address of the deployed instance
+      type: string
+      value: { get_attribute: [ my_instance, accessIPv4 ] }

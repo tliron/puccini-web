@@ -1,0 +1,105 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+metadata:
+
+  template_name: BPMN Profile Example
+  template_author: Puccini
+
+imports:
+
+- namespace_prefix: bpmn
+  file: internal:/tosca/bpmn/1.0/profile.yaml
+
+interface_types:
+
+  Backup:
+    operations:
+      start_backup: {}
+
+node_types:
+
+  MyVNF:
+    derived_from: tosca:WebApplication
+    interfaces:
+      Backup:
+        type: Backup
+
+topology_template:
+
+  node_templates:
+
+    frontend:
+      type: tosca:LoadBalancer
+      requirements:
+      - application: vnf
+
+    vnf:
+      type: MyVNF
+      capabilities:
+        app_endpoint:
+          properties:
+            protocol: http
+            port: 8080
+
+    agent:
+      type: tosca:WebApplication
+
+    node_js:
+      type: tosca:WebServer
+
+    host1:
+      type: tosca:Compute
+      attributes:
+        public_address: 192.168.1.123
+
+    host2:
+      type: tosca:Compute
+      attributes:
+        public_address: 192.168.1.124
+
+  policies:
+
+  - notify_on_high_load:
+      type: bpmn:Process
+      properties:
+        bpmn_process_id: NotifyUser
+      triggers:
+        cpu_load:
+          event: BPMN
+          action:
+          - delegate: backup
+      targets:
+      - host1
+      - host2
+
+  workflows:
+
+    backup:
+      steps:
+        notify_users:
+          target: agent
+          activities: []
+          on_success:
+          - shutdown
+          - backup
+        shutdown:
+          target: frontend
+          activities:
+          - set_state: down
+          on_success:
+          - restart
+        backup:
+          target: vnf
+          activities:
+          - set_state: down
+          - call_operation: Backup.start_backup 
+          on_failure:
+          - notify_admins
+          on_success:
+          - restart
+        restart:
+          target: frontend
+          activities: []
+        notify_admins:
+          target: agent
+          activities: []

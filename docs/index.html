@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+
+	<!-- https://stackoverflow.com/a/38917888 -->
+	<link rel="icon" href="data:,">
+
+	<title>TOSCA Mini-IDE</title>
+
+	<!-- jQuery -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" type="text/javascript"></script>
+
+	<!-- jQuery UI -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+
+	<!-- jQuery Layout -->
+	<script src="https://cdn.jsdelivr.net/npm/layout-jquery3@1.8.5/dist/jquery.layout_and_plugins.min.js" type="text/javascript"></script>
+	<link href="https://cdn.jsdelivr.net/npm/layout-jquery3@1.8.5/dist/layout-default.css" rel="stylesheet" type="text/css" />
+
+	<!-- Ace -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" type="text/javascript"></script>
+
+	<!-- vis.js -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vis-network@9.0.2/standalone/umd/vis-network.min.js" type="text/javascript"></script>
+	<link href="https://cdn.jsdelivr.net/npm/vis-network@9.0.2/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+
+	<!-- Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet" type="text/css" />
+	<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css" /> 
+
+	<script src="js/wasm_exec.js" type="text/javascript"></script>
+	<script src="js/go_cli.js" type="text/javascript"></script>
+	<script src="js/puccini.js" type="text/javascript"></script>
+	<script src="js/examples.js" type="text/javascript"></script>
+	<script src="js/site.js" type="text/javascript"></script>
+	<link href="css/site.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+	<div class="ui-layout-north">
+		<h1>TOSCA Mini-IDE</h1>
+		<p>
+			Edit and validate <a href="https://www.oasis-open.org/committees/tosca/">TOSCA</a> by compiling it to <a href="https://puccini.cloud/clout/">Clout</a>.
+			Supported dialects:
+			<a href="https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/TOSCA-Simple-Profile-YAML-v1.3.html">TOSCA 1.3</a>,
+			<a href="https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.2/TOSCA-Simple-Profile-YAML-v1.2.html">1.2</a>,
+			<a href="https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.1/TOSCA-Simple-Profile-YAML-v1.1.html">1.1</a>,
+			<a href="https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.0/TOSCA-Simple-Profile-YAML-v1.0.html">1.0</a>,
+			as well as
+			<a href="https://docs.cloudify.co/5.0.5/developer/blueprints/">Cloudify DSL 1.3</a>
+			and
+			<a href="https://docs.openstack.org/heat/stein/template_guide/hot_guide.html">OpenStack Heat HOT</a>.
+		</p>
+		<p>
+			Powered by <a href="https://puccini.cloud/">Puccini</a> running entirely within this browser as <a href="https://webassembly.org/">WebAssembly</a>.
+			There is no server-side execution! For more information see this project on <a href="https://github.com/tliron/puccini-web">GitHub</a>.
+		</p>
+	</div>
+
+	<div class="ui-layout-center">
+		<div class="pane">
+			<div>
+				<h2 style="float: left;">TOSCA Input</h2>
+				<div style="float: right;">
+					<label for="examples">Load example:</label>
+					<select id="examples">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div id="source" class="pane-content"></div>
+		</div>
+	</div>
+
+	<div class="ui-layout-east">
+		<div class="pane">
+			<div>
+				<h2 style="float: left;">Clout Output</h2>
+			</div>
+			<div class="pane-content">
+				<div id="stdout" class="pane-content-inner"></div>
+				<div id="network" class="pane-content-inner" style="visibility: hidden;"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="ui-layout-south">
+		<div class="pane">
+			<div>
+				<h2 style="float: left;">Debug Output</h2>
+				<div class="toolbar" style="float: right;">
+					<button id="compile" disabled>Parse and Compile</button>
+					<button id="visualize" disabled>Visualize</button>
+					<button id="url" disabled>From External URL</button>
+					<button id="version" disabled>Show Puccini Version</button>
+					<input id="resolve" type="checkbox" checked></input>
+					<label for="resolve">Resolve Requirements</label>
+					<input id="coerce" type="checkbox"></input>
+					<label for="coerce">Coerce Values</label>
+				</div>
+			</div>
+			<div id="stderr" class="pane-content"></div>
+		</div>
+	</div>
+
+</body>
+
+<div id="url-dialog" title="From External URL">
+	<input id="url-field" type="text" size="80"></input>
+</div>
+
+</html>
