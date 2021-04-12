@@ -1,6 +1,6 @@
-heat_template_version: 2018-08-31
+heat_template_version: 2021-04-16
 
-# See: https://docs.openstack.org/heat/stein/template_guide/hot_guide.html
+# See: https://docs.openstack.org/heat/wallaby/template_guide/hot_guide.html
 
 description: >-
   Hello World stack

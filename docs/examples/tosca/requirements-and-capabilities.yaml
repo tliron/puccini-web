@@ -96,9 +96,9 @@ topology_template:
 
   node_templates:
 
-    # Because the "socket" requirement is not controlled by "occurrences" at the node type
-    # it will be automatically assigned to "light1"
-    # That requirements has 3 matching capabilities in this topology,
+    # By default Puccini will automatically create requirement assignments to ensure that
+    # the lower bound of the requirement "occurrences" is met, with the default being [ 1, 1 ]
+    # That requirement has 3 matching capabilities in this topology,
     # So Puccini will arbitrarily satisfy it with one of them
     light1:
       type: LightBulb
@@ -134,42 +134,32 @@ topology_template:
       - socket:
           capability: SuperSocket
 
-    # You can specify the same requirement more than once, which will lead to multiple relationships
-    # (However, the number of times you may do so can be limited by "occurrences" at the node type requirement)
-    light6:
-      type: LightBulb
-      requirements:
-      - socket:
-          capability: SuperSocket
-      # An "empty" requirement will use whatever we specified at the node type
-      - socket: {}
-
     # You can use "node_filter" to further require property values at the target node
-    light7:
+    light6:
       type: LightBulb
       requirements:
       - socket:
           capability: Socket
           node_filter:
             properties:
-              age:
+            - age:
               # Note that special data types are not supported here
-              - less_than: 8640000 # 100 d -> seconds
+                less_than: 8640000 # 100 d -> seconds
 
     # You can also put "node_filter" at the node itself, in which case the filter will
     # apply to *all* requirements
-    light8:
+    light7:
       type: LightBulb
       node_filter:
         properties:
-          age:
-          - less_than: 8640000 # 100 d -> seconds
+        - age:
+            less_than: 8640000 # 100 d -> seconds
       requirements:
       - socket:
           capability: Socket
 
     # "node_filter" can also work on capability properties
-    light9:
+    light8:
       type: LightBulb
       requirements:
       - socket:
@@ -178,19 +168,19 @@ topology_template:
             capabilities:
             - emergency:
                 properties:
-                  frequency:
-                  - greater_than: 100 # 100 hz
+                - frequency:
+                    greater_than: 100 # 100 hz
  
     # You can add a relationship type to the requirement
     # (If you don't, Puccini creates an empty relationship with no properties)
-    light10:
+    light9:
       type: LightBulb
       requirements:
       - socket:
           relationship: SmartPlug
 
     # The long notation lets you assign values to the relationship
-    light11:
+    light10:
       type: LightBulb
       requirements:
       - socket:
@@ -200,13 +190,15 @@ topology_template:
               vendor: Smart Appliances Industries
 
     # Yet another option is to use a relationship template (see below) instead of a type
-    light12:
+    light11:
       type: LightBulb
       requirements:
       - socket:
           relationship: smart_plug
 
-    # "occurrences" for "socket" requirement is [ 2, 4 ], so we must assign it *at least* twice
+    # If the lower bound of occurences is > 1 then you can specify the same requirement more than once,
+    # which will lead to multiple relationships
+    # Here it is [ 2, UNBOUNDED ]
     fan1:
       type: Fan
       requirements:

@@ -55,7 +55,7 @@ group_types:
     members:
     # When inheriting we are allowed to remove member types that were specified in the parent
     # But any types we *do* specify must be equal to or derived from any of those in the parent
-    - tosca:BlockStorage
+    - tosca:Storage.BlockStorage
     # So this would not work:
     #- tosca:LoadBalancer
 
@@ -90,7 +90,7 @@ topology_template:
       type: SuperCompute
 
     storage:
-      type: tosca:ObjectStorage
+      type: tosca:Storage.ObjectStorage
       properties:
         name: My Storage
 
@@ -120,6 +120,12 @@ topology_template:
         # Triggers are optional
         backup:
           event: power-failure
+          condition:
+            period: 1 m
+            constraint:
+              or:
+              - private_address: [ { pattern: '^192\.168\.1\..+' } ]
+              - private_address: [ { pattern: '^192\.168\.2\..+' } ]
           action:
           - call_operation: Backup.start_backup
           # Scheduling a trigger is optional

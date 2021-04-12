@@ -42,7 +42,7 @@ topology_template:
           relationship: tosca:HostedOn
 
     storage:
-      type: tosca:BlockStorage
+      type: tosca:Storage.BlockStorage
       properties:
         name: storage
         volume_id: bucket

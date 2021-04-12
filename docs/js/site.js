@@ -18,10 +18,10 @@ $(function () {
 	const examplesWidget = $('#examples').selectmenu()
 	.on('selectmenuselect', function (e, ui) {
 		loadFromUrl(ui.item.value);
-		$('#examples').val('').selectmenu('refresh');
+		//$('#examples').val('').selectmenu('refresh');
 	});
-	for (var i in examples) {
-		var example = examples[i];
+	for (let i in examples) {
+		let example = examples[i];
 		examplesWidget.append(`<option value="${example}">${example}</option>`);
 	}
 
@@ -112,10 +112,10 @@ $(function () {
 
 const Range = ace.require('ace/range').Range;
 
-var source;
-var stdout;
-var stderr;
-var visualizing;
+let source;
+let stdout;
+let stderr;
+let visualizing;
 const markers = [];
 
 function reset(visualize) {
@@ -161,15 +161,15 @@ function onExit(code) {
 	const session = source.getSession(); 
 	const annotations = [];
 	const messages = [];
-	var scrollToRow = Infinity;
+	let scrollToRow = Infinity;
 
-	const problems = JSON.parse(stderr.getValue()).Problems;
-	for (var i in problems) {
+	const problems = JSON.parse(stderr.getValue()).problems;
+	for (let i in problems) {
 		const problem = problems[i];
 		const message = problem.message;
 
 		function add(row, column, marker) {
-			var m = message;
+			let m = message;
 			if (row !== undefined) {
 				if (column !== -1)
 					m = `@${row},${column}: ${m}`;
@@ -262,7 +262,7 @@ function visualize() {
 function getUrlParam(param) {
 	const url = window.location.search.substring(1);
 	const urlParams = url.split('&');
-	for (var i in urlParams) {
+	for (let i in urlParams) {
 		const urlParamName = urlParams[i].split('=');
 		if (urlParamName[0] === param)
 			return urlParamName[1] === undefined ? true : decodeURIComponent(urlParamName[1]);

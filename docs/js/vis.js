@@ -1,21 +1,21 @@
 
-clout.exec('tosca.lib.utils');
+const tosca = require('tosca.lib.utils');
 
-var nodes = [];
-var edges = [];
+let nodes = [];
+let edges = [];
 
-var colorNode = 'rgb(100,200,255)';
-var colorPolicy = 'rgb(255,165,0)';
-var colorSubstitution = 'rgb(150,200,255)';
-var colorWorkflow = 'rgb(100,255,100)';
+let colorNode = 'rgb(100,200,255)';
+let colorPolicy = 'rgb(255,165,0)';
+let colorSubstitution = 'rgb(150,200,255)';
+let colorWorkflow = 'rgb(100,255,100)';
 
-for (var id in clout.vertexes) {
-	var vertex = clout.vertexes[id];
+for (let id in clout.vertexes) {
+	let vertex = clout.vertexes[id];
 	addVertex(id, vertex);
 }
 
 function addVertex(id, vertex) {
-	var node = {
+	let node = {
 		id: id,
 		label: id,
 		data: tosca.isTosca(vertex) ? vertex.properties : vertex
@@ -40,12 +40,12 @@ function addVertex(id, vertex) {
 
 	nodes.push(node);
 
-	for (var e = 0, l = vertex.edgesOut.length; e < l; e++)
+	for (let e = 0, l = vertex.edgesOut.length; e < l; e++)
 		addEdge(id, vertex.edgesOut[e]);
 }
 
 function addEdge(id, e) {
-	var edge = {
+	let edge = {
 		from: id,
 		to: e.targetID,
 		arrows: {

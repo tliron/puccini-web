@@ -93,7 +93,7 @@ topology_template:
           # The second argument for "get_property" can be a cabability name:
           - { get_property: [ ports1, ingress, ingress_port, addresses, 0 ] }
           # Or a requirement name (in which case the properties would be that of the relationship):
-          - { get_property: [ SELF, egress, connection_port, addresses, 0 ] }
+          - { get_property: [ SELF, egress, 0, connection_port, addresses, 0 ] }
       requirements:
       - egress:
           node: ports1

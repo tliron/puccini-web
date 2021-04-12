@@ -18,7 +18,6 @@ topology_template:
       type: tosca:VduCpd
       requirements:
       - virtual_binding: firewall
-      - virtual_binding: router
 
     firewall:
       type: tosca:VDU.Compute

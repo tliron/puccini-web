@@ -54,7 +54,7 @@ class GoCLI {
 
 	_writeSync(fd, buffer) {
 		// In wasm_exec.js this writes to console
-		var text = this._textDecoder.decode(buffer);
+		let text = this._textDecoder.decode(buffer);
 		switch (fd) {
 		case 1:
 			this._printStdout(text);
@@ -69,7 +69,7 @@ class GoCLI {
 	_read(fd, buffer, offset, length, position, callback) {
 		// Not implemented in wasm_exec.js
 		// See: https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback
-		var count = 0;
+		let count = 0;
 		if (fd === 0) {
 			const stdinLength = this._stdin.length;
 			for (; count < length; count++) {

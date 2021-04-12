@@ -1,0 +1,13 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+metadata:
+
+  template_name: TOSCA 1.2 Example
+  template_author: Puccini
+
+topology_template:
+
+  node_templates:
+
+    main:
+      type: tosca:Compute

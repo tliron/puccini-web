@@ -13,7 +13,11 @@ interface_types:
 
   Backup:
     operations:
-      start_backup: {}
+      start_backup:
+        inputs:
+          async:
+            type: boolean
+            default: false
 
 node_types:
 
@@ -52,10 +56,8 @@ topology_template:
           - backup
           filter:
           - or:
-            - assert:
-              - foo: [ { equals: true } ]
-            - assert:
-              - bar: [ { greater_than: 2 }, { less_than: 20 } ]
+            - foo: [ { equal: true } ]
+            - bar: [ { greater_than: 2 }, { less_than: 20 } ]
         shutdown:
           target: web
           # You can specify 0 or more activities for the step
@@ -69,7 +71,10 @@ topology_template:
           - set_state: down
           # We can call an operation on an interface on the target node
           # (Note that it *cannot* accept inputs)
-          - call_operation: Backup.start_backup
+          - call_operation:
+              operation: Backup.start_backup
+              inputs:
+                async: true
           on_failure:
           - notify_admins
           on_success:

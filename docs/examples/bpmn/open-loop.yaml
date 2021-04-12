@@ -8,7 +8,7 @@ metadata:
 imports:
 
 - namespace_prefix: bpmn
-  file: internal:/tosca/bpmn/1.0/profile.yaml
+  file: profile/profile.yaml
 
 interface_types:
 

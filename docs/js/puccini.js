@@ -1,5 +1,5 @@
 const Puccini = (function () {
-	var _cli = null;
+	let _cli = null;
 
 	return {
 		init: function (printStdout, printStderr, initCallback, exitCallback) {
