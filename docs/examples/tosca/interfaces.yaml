@@ -24,8 +24,7 @@ node_types:
             # You *must* define inputs in order to assign them at the template
             inputs:
               retries:
-                type:
-                  integer
+                type: integer
     attributes:
       progress:
         type: string

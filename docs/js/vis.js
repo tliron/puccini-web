@@ -1,5 +1,5 @@
 
-clout.exec('tosca.lib.utils');
+const tosca = require('tosca.lib.utils');
 
 var nodes = [];
 var edges = [];

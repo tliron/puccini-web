@@ -163,7 +163,7 @@ function onExit(code) {
 	const messages = [];
 	var scrollToRow = Infinity;
 
-	const problems = JSON.parse(stderr.getValue()).Problems;
+	const problems = JSON.parse(stderr.getValue()).problems;
 	for (var i in problems) {
 		const problem = problems[i];
 		const message = problem.message;

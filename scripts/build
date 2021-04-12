@@ -29,6 +29,10 @@ cp "$REPO/dist/puccini-tosca.wasm" "$WASM_DIR/"
 
 cd "$REPO/examples"
 rsync --relative \
+	"tosca/future/tosca_2_0.yaml" \
+	"tosca/legacy/tosca_1_0.yaml" \
+	"tosca/legacy/tosca_1_1.yaml" \
+	"tosca/legacy/tosca_1_2.yaml" \
 	"tosca/artifacts.yaml" \
 	"tosca/attributes.yaml" \
 	"tosca/copy.yaml" \
@@ -53,6 +57,12 @@ rsync --relative \
 	"bpmn/open-loop.yaml" \
 	"openstack/hello-world.yaml" \
 	"$EXAMPLES_DIR/"
+
+#	"tosca/imports/mongodb.yaml" \
+#	"tosca/imports/nginx.yaml" \
+#	"tosca/imports/super-load-balancer.yaml" \
+#	"tosca/substitution-mapping-client.yaml" \
+#	"tosca/substitution-mapping.yaml" \
 
 "$HERE/update-examples"
 

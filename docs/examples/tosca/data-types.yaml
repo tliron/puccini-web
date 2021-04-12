@@ -164,6 +164,12 @@ data_types:
 
 topology_template:
 
+  inputs:
+
+    number:
+      type: integer
+      default: 4
+
   node_templates:
 
     data:
@@ -177,11 +183,12 @@ topology_template:
         # The "null" type can have only the null value
         'null': null
 
-        integer_list: [ 1, 2, 3 ]
+        integer_list: [ 1, 2, 3, { get_input: number } ]
 
         string_map:
           Greeting: Hello
-          # Note that map keys could be function calls
+          # Note that values as well map keys could be function calls
+          Message: { concat: [ Good, ' ', Day ] }
           { concat: [ Recip, ient ] }: Puccini
 
         lowercase_string_map:
@@ -226,7 +233,7 @@ topology_template:
         # Note that some YAML environments may support a !!timestamp type:
         # http://yaml.org/type/timestamp.html
         # Normally Puccini will not allow it, but it could be enabled via a quirk:
-        # puccini-tosca compile --quirk=data_types.string.permissive
+        # puccini-tosca compile --quirk=data_types.timestamp.permissive
         # (In this case the YAML parser parses the timestamp, not Puccini's TOSCA parser)
         #timestamp: !!timestamp 1975-09-15t12:34:56.7+02:00
 

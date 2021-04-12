@@ -11,7 +11,7 @@ metadata:
 imports:
 
 - namespace_prefix: openstack
-  file: internal:/tosca/openstack/1.0/profile.yaml
+  file: profile/profile.yaml
 
 topology_template:
 
